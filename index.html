@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>NA RhythmIQ</title>
+
+<style>
+:root{
+  --bg:#f6f7fb;--card:#fff;--text:#121826;--muted:#667085;
+  --line:#d8dee9;--accent:#3867e8;--accentbg:#edf3ff;
+  --danger:#9b1c1c;--warn:#fff8e6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif
+}
+main{max-width:820px;margin:auto;padding:28px 18px 60px}
+.kicker{
+  font-size:12px;font-weight:800;letter-spacing:.09em;
+  color:var(--accent);text-transform:uppercase
+}
+h1{font-size:30px;margin:8px 0}
+.intro{color:var(--muted);line-height:1.55}
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:22px;padding:20px;margin-top:20px
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+label{display:block;font-weight:750;margin:0 0 7px}
+select{
+  width:100%;min-height:54px;border:1px solid var(--line);
+  border-radius:13px;background:#fff;padding:0 13px;font-size:16px
+}
+.actions{display:flex;gap:10px;margin-top:20px}
+button{
+  min-height:55px;border:1px solid var(--line);border-radius:13px;
+  background:#fff;padding:0 20px;font-weight:800;font-size:17px;
+  cursor:pointer;touch-action:manipulation
+}
+.primary{
+  border:2px solid var(--accent);
+  background:var(--accentbg);color:#173b9c
+}
+.result{display:none}
+.result.show{display:block}
+.badge{
+  display:inline-block;border:1px solid var(--line);
+  border-radius:999px;padding:6px 10px;font-size:12px;
+  font-weight:800;margin-right:5px
+}
+.section{padding:14px 0;border-bottom:1px solid #edf0f5}
+.section h3{margin:0 0 7px;font-size:17px}
+.section p{margin:0;line-height:1.55}
+.stop{
+  background:#fff1f1;color:var(--danger);
+  padding:13px;border-radius:12px;margin-top:10px
+}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.hidden{display:none}
+
+@media(max-width:620px){
+  .grid{grid-template-columns:1fr}
+  h1{font-size:25px}
+  .card{padding:16px}
+  .actions button{flex:1}
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<div class="kicker">Educational prototype • Adult rhythms</div>
+<h1>NA RhythmIQ</h1>
+
+<p class="intro">
+ECG Clinical Decision Trainer. Enter the clinical information below,
+then select Analyze case.
+</p>
+
+<section class="card">
+
+<div class="grid">
+
+<div>
+<label>Pulse</label>
+<select id="pulse">
+<option value="">Select…</option>
+<option value="yes">Present</option>
+<option value="no">Absent</option>
+</select>
+</div>
+
+<div>
+<label>Rhythm</label>
+<select id="rhythm">
+<option value="">Select…</option>
+<option value="svt">Regular narrow-complex SVT</option>
+<option value="af">Atrial fibrillation</option>
+<option value="flutter">Atrial flutter</option>
+<option value="mvt">Monomorphic VT / regular WCT</option>
+<option value="pvt">Polymorphic VT</option>
+<option value="torsades">Torsades de pointes</option>
+<option value="vf">Ventricular fibrillation</option>
+<option value="brady">Symptomatic bradycardia / AV block</option>
+<option value="unknown">Unknown tachyarrhythmia</option>
+</select>
+</div>
+
+<div>
+<label>Hemodynamic status</label>
+<select id="status">
+<option value="">Select…</option>
+<option value="stable">Stable</option>
+<option value="unstable">Unstable / cardiopulmonary compromise</option>
+</select>
+</div>
+
+<div>
+<label>QRS width</label>
+<select id="qrs">
+<option value="">Select…</option>
+<option value="narrow">Narrow &lt;120 ms</option>
+<option value="wide">Wide ≥120 ms</option>
+<option value="na">N/A</option>
+</select>
+</div>
+
+<div>
+<label>Regularity</label>
+<select id="regular">
+<option value="">Select…</option>
+<option value="regular">Regular</option>
+<option value="irregular">Irregular</option>
+<option value="na">N/A</option>
+</select>
+</div>
+
+<div>
+<label>QT / QTc</label>
+<select id="qt">
+<option value="">Select…</option>
+<option value="normal">Not prolonged</option>
+<option value="long">Prolonged</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+<div>
+<label>Pre-excitation / WPW suspected?</label>
+<select id="wpw">
+<option value="">Select…</option>
+<option value="no">No</option>
+<option value="yes">Yes / suspected</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+<div>
+<label>LVEF / HFrEF</label>
+<select id="ef">
+<option value="">Select…</option>
+<option value="preserved">No known HFrEF</option>
+<option value="reduced">HFrEF / reduced EF</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+<div>
+<label>Structural heart disease / CAD / prior MI</label>
+<select id="struct">
+<option value="">Select…</option>
+<option value="no">No known disease</option>
+<option value="yes">Yes</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+<div>
+<label>K⁺ / Mg²⁺ abnormality?</label>
+<select id="electrolytes">
+<option value="">Select…</option>
+<option value="no">No known abnormality</option>
+<option value="yes">Yes / suspected</option>
+<option value="unknown">Unknown / not checked</option>
+</select>
+</div>
+
+<div>
+<label>Renal/hepatic impairment?</label>
+<select id="organ">
+<option value="">Select…</option>
+<option value="no">No known impairment</option>
+<option value="yes">Yes</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+<div>
+<label>QT-prolonging / interacting drugs?</label>
+<select id="meds">
+<option value="">Select…</option>
+<option value="no">No known</option>
+<option value="yes">Yes / possible</option>
+<option value="unknown">Unknown</option>
+</select>
+</div>
+
+</div>
+
+<div class="actions">
+<button type="button" class="primary" onclick="analyzeCase()">
+Analyze case
+</button>
+
+<button type="button" onclick="newCase()">
+New case
+</button>
+</div>
+
+</section>
+
+<section id="result" class="card result">
+
+<span id="priority" class="badge"></span>
+<span id="drugClass" class="badge"></span>
+
+<h2 id="headline"></h2>
+
+<div id="missing" class="stop hidden"></div>
+
+<div class="section">
+<h3>Recommended pathway</h3>
+<p id="pathway"></p>
+</div>
+
+<div class="section">
+<h3>Antiarrhythmic class / medication role</h3>
+<p id="drug"></p>
+</div>
+
+<div class="section">
+<h3>Why</h3>
+<p id="why"></p>
+</div>
+
+<div class="section">
+<h3>Avoid / check first</h3>
+<p id="avoid"></p>
+</div>
+
+<div class="section">
+<h3>Guideline anchor</h3>
+<p id="source"></p>
+</div>
+
+</section>
+
+<p class="small">
+<strong>Safety:</strong> Educational decision-support trainer only.
+Not a diagnostic device, medication order, dosing calculator, or
+substitute for ECG confirmation, ACLS/local protocols, bedside
+assessment, pharmacist/cardiology review, or emergency care.
+</p>
+
+</main>
+
+<script>
+
+function val(id){
+  return document.getElementById(id).value;
+}
+
+function showResult(priority,cls,headline,pathway,drug,why,avoid,source,missing){
+
+  document.getElementById("priority").textContent=priority;
+  document.getElementById("drugClass").textContent=cls;
+  document.getElementById("headline").textContent=headline;
+  document.getElementById("pathway").textContent=pathway;
+  document.getElementById("drug").textContent=drug;
+  document.getElementById("why").textContent=why;
+  document.getElementById("avoid").textContent=avoid;
+  document.getElementById("source").textContent=source;
+
+  var m=document.getElementById("missing");
+
+  if(missing){
+    m.textContent="Need before a safe recommendation: "+missing;
+    m.classList.remove("hidden");
+  }else{
+    m.classList.add("hidden");
+  }
+
+  var result=document.getElementById("result");
+  result.classList.add("show");
+
+  setTimeout(function(){
+    result.scrollIntoView({behavior:"smooth",block:"start"});
+  },100);
+}
+
+function analyzeCase(){
+
+  var pulse=val("pulse");
+  var rhythm=val("rhythm");
+  var status=val("status");
+  var qrs=val("qrs");
+  var regular=val("regular");
+  var qt=val("qt");
+  var wpw=val("wpw");
+  var ef=val("ef");
+  var electrolytes=val("electrolytes");
+  var organ=val("organ");
+  var meds=val("meds");
+
+  if(!pulse || !rhythm){
+    showResult(
+      "INSUFFICIENT DATA",
+      "No class selected",
+      "Pulse and rhythm are required",
+      "Enter the minimum resuscitation information first.",
+      "No medication recommendation.",
+      "Presence or absence of a pulse changes the management pathway.",
+      "Do not infer treatment from ECG appearance alone.",
+      "AHA Adult ALS",
+      "Pulse and rhythm"
+    );
+    return;
+  }
+
+  if(pulse==="no"){
+
+    if(
+      rhythm==="vf" ||
+      rhythm==="mvt" ||
+      rhythm==="pvt" ||
+      rhythm==="torsades"
+    ){
+      showResult(
+        "CARDIAC ARREST",
+        "Shockable pathway",
+        "Shockable cardiac arrest",
+        "Defibrillation plus high-quality CPR. Continue the adult cardiac-arrest algorithm and treat reversible causes.",
+        "Antiarrhythmic therapy may enter the refractory VF/pVT pathway after shock and CPR priorities.",
+        "Pulselessness makes resuscitation the immediate priority.",
+        "Never delay CPR or defibrillation to complete this tool.",
+        "2025 AHA Adult Cardiac Arrest / ALS",
+        ""
+      );
+    }else{
+      showResult(
+        "CARDIAC ARREST",
+        "Not class-first",
+        "Pulseless patient",
+        "Follow the adult cardiac-arrest algorithm and identify reversible causes.",
+        "A Vaughan-Williams drug selector is not the primary framework.",
+        "Pulselessness overrides the stable-arrhythmia pathway.",
+        "Prioritize CPR and appropriate arrest management.",
+        "2025 AHA Adult ALS",
+        ""
+      );
+    }
+    return;
+  }
+
+  if(!status){
+    showResult(
+      "CHECK STABILITY",
+      "Pending",
+      "Determine hemodynamic stability",
+      "Assess for hypotension, shock, altered mental status, ischemic chest discomfort or acute heart failure.",
+      "No medication recommendation until stability is known.",
+      "Instability can make electrical therapy the priority.",
+      "Do not delay stabilization.",
+      "2025 AHA Adult Tachyarrhythmia With a Pulse",
+      "Hemodynamic status"
+    );
+    return;
+  }
+
+  if(status==="unstable" && rhythm!=="brady"){
+
+    if(rhythm==="pvt" || rhythm==="torsades"){
+      showResult(
+        "ELECTRICAL THERAPY FIRST",
+        "Drug class secondary",
+        "Unstable polymorphic ventricular tachycardia",
+        "Urgent unsynchronized shock/defibrillation is the electrical pathway because polymorphic VT cannot be reliably synchronized.",
+        "Drug selection must not delay electrical therapy.",
+        "The immediate goal is restoration of effective perfusion.",
+        "Correct reversible causes and verify the rhythm.",
+        "2025 AHA Adult ALS",
+        ""
+      );
+    }else{
+      showResult(
+        "ELECTRICAL THERAPY FIRST",
+        "Drug class secondary",
+        "Unstable tachyarrhythmia with a pulse",
+        "Synchronized cardioversion is generally prioritized when the tachyarrhythmia is causing instability.",
+        "Antiarrhythmic selection must not delay urgent electrical therapy.",
+        "The immediate goal is restoration of perfusion.",
+        "Verify the rhythm-specific electrical approach.",
+        "2025 AHA Adult ALS",
+        ""
+      );
+    }
+    return;
+  }
+
+  if(rhythm==="brady"){
+    showResult(
+      "BRADYCARDIA PATHWAY",
+      "Not Vaughan-Williams",
+      "Symptomatic bradycardia / AV block",
+      "Treat reversible causes. With hemodynamic compromise, atropine may be used; if ineffective, pacing and/or epinephrine or dopamine infusion may be considered according to the clinical pathway.",
+      "This is not primarily an antiarrhythmic-class selection problem.",
+      "Rate support and correction of the cause take priority.",
+      "High-grade or infranodal block may respond poorly to atropine; do not delay pacing when clinically required.",
+      "2025 AHA Adult Bradycardia With a Pulse",
+      ""
+    );
+    return;
+  }
+
+  if(rhythm==="svt"){
+
+    if(qrs==="wide"){
+      showResult(
+        "RECLASSIFY WCT",
+        "Do not assume SVT",
+        "Wide-complex tachycardia",
+        "Reassess as a wide-complex tachycardia and consider VT until the mechanism is clarified.",
+        "No class should be selected solely from the SVT label.",
+        "Wide-complex tachycardia may represent VT.",
+        "Avoid verapamil or diltiazem in undifferentiated WCT.",
+        "2025 AHA Adult ALS",
+        "Confirmed WCT mechanism"
+      );
+    }else{
+      showResult(
+        "STABLE SVT",
+        "Adenosine",
+        "Regular narrow-complex SVT",
+        "Vagal maneuvers first; adenosine is commonly used for persistent regular narrow-complex SVT when appropriate.",
+        "Adenosine is not Vaughan-Williams Class I-IV.",
+        "Transient AV-nodal block can terminate AV-node-dependent re-entry.",
+        "Do not use this pathway for irregular or pre-excited tachycardia.",
+        "2025 AHA Adult Tachyarrhythmia With a Pulse",
+        ""
+      );
+    }
+    return;
+  }
+
+  if(rhythm==="af" || rhythm==="flutter"){
+
+    if(!wpw || wpw==="unknown"){
+      showResult(
+        "AF / FLUTTER",
+        "Pending",
+        "Check for pre-excitation",
+        "Determine whether WPW/pre-excitation is present before selecting an AV-nodal rate-control strategy.",
+        "Drug selection remains pending.",
+        "Pre-excited AF requires a different treatment pathway.",
+        "Do not blindly use AV-nodal blockers when pre-excitation is possible.",
+        "ACC/AHA AF guidance",
+        "WPW/pre-excitation assessment"
+      );
+      return;
+    }
+
+    if(wpw==="yes"){
+      showResult(
+        "PRE-EXCITED AF",
+        "Avoid AV-nodal blockers",
+        "AF with suspected pre-excitation",
+        "Use a dedicated pre-excited AF pathway and urgent/expert management. Electrical cardioversion is used when unstable.",
+        "Procainamide is among agents used in appropriate stable pre-excited AF pathways.",
+        "Accessory-pathway conduction can produce dangerously rapid ventricular rates.",
+        "Avoid adenosine, beta-blockers, verapamil/diltiazem and digoxin in pre-excited AF.",
+        "ACC/AHA AF guidance",
+        ""
+      );
+      return;
+    }
+
+    showResult(
+      "STABLE AF / FLUTTER",
+      "Class II / IV may fit rate control",
+      "AF / atrial flutter without suspected pre-excitation",
+      "Choose rate versus rhythm control according to symptoms, duration, comorbidities and thromboembolic risk.",
+      ef==="reduced"
+      ? "Reduced EF changes medication selection; do not automatically select a non-DHP calcium-channel blocker."
+      : "A beta-blocker (Class II) or non-DHP calcium-channel blocker (Class IV) may be used for rate control when otherwise appropriate.",
+      "AF management requires more than rhythm identification alone.",
+      "Assess stroke risk, anticoagulation, AF duration, EF, QT, structural disease, organ function and interactions.",
+      "2023 ACC/AHA/ACCP/HRS AF Guideline",
+      ""
+    );
+    return;
+  }
+
+  if(rhythm==="torsades" || (rhythm==="pvt" && qt==="long")){
+    showResult(
+      "TORSADES / LONG QT",
+      "Magnesium; not class-first",
+      "Long-QT polymorphic VT",
+      "Correct precipitating causes and electrolyte abnormalities. Magnesium has a central role in torsades associated with long QT. Electrical therapy takes priority when unstable or pulseless.",
+      "Do not select a QT-prolonging Class III drug simply because the rhythm is ventricular tachycardia.",
+      "Torsades is a distinct long-QT polymorphic VT mechanism.",
+      "Check K+, Mg2+, bradycardia and QT-prolonging medications.",
+      "2025 AHA Adult ALS",
+      ""
+    );
+    return;
+  }
+
+  if(rhythm==="pvt"){
+
+    if(!qt || qt==="unknown"){
+      showResult(
+        "POLYMORPHIC VT",
+        "Pending QT",
+        "QT status changes the pathway",
+        "Determine whether QT is prolonged and assess ischemia and other reversible causes.",
+        "No safe class selection should be made from morphology alone.",
+        "Torsades and polymorphic VT with normal QT have different mechanisms.",
+        "Do not automatically treat every polymorphic VT as torsades.",
+        "2025 AHA Adult ALS",
+        "QT/QTc status"
+      );
+      return;
+    }
+
+    showResult(
+      "POLYMORPHIC VT",
+      "Cause-dependent",
+      "Polymorphic VT without known long QT",
+      "Assess for acute ischemia and reversible causes. Electrical therapy is required if sustained and unstable.",
+      "Medication selection depends on mechanism and clinical context.",
+      "Normal-QT polymorphic VT is not automatically torsades.",
+      "Evaluate ischemia and reversible causes.",
+      "2025 AHA Adult ALS",
+      ""
+    );
+    return;
+  }
+
+  if(rhythm==="mvt" || rhythm==="unknown"){
+
+    if(!qrs || !regular || !qt){
+      showResult(
+        "WIDE-COMPLEX WORKUP",
+        "Pending",
+        "More ECG characterization required",
+        "Define QRS width, regularity and QT/QTc. An uncertain WCT should be approached cautiously as possible VT.",
+        "No medication class selected yet.",
+        "These ECG features change the treatment pathway.",
+        "Avoid verapamil/diltiazem in undifferentiated WCT.",
+        "2025 AHA Adult ALS",
+        "QRS width, regularity and QT/QTc"
+      );
+      return;
+    }
+
+    if(regular==="irregular"){
+      showResult(
+        "IRREGULAR WCT",
+        "Mechanism required",
+        "Irregular wide-complex tachycardia",
+        "Evaluate AF with aberrancy, pre-excited AF and polymorphic VT.",
+        "There is no single safe antiarrhythmic-class answer without defining the mechanism.",
+        "Irregular WCT has several important high-risk differentials.",
+        "Avoid AV-nodal blockers if pre-excited AF is possible.",
+        "AHA/ACC rhythm guidance",
+        "Mechanism of irregular WCT"
+      );
+      return;
+    }
+
+    var warning="Check hypotension, HFrEF/structural disease, renal/hepatic function, electrolytes and drug interactions.";
+
+    if(qt==="long"){
+      warning="Prolonged QT is an important constraint. "+warning;
+    }
+
+    if(electrolytes==="yes"){
+      warning="Correct K+/Mg2+ abnormalities. "+warning;
+    }
+
+    if(organ==="yes"){
+      warning+=" Organ impairment may alter drug selection or dosing.";
+    }
+
+    if(meds==="yes"){
+      warning+=" Review QT-prolonging and interacting medications.";
+    }
+
+    showResult(
+      "STABLE REGULAR WCT",
+      "Class IA / III options may appear",
+      "Stable regular monomorphic wide-complex tachycardia",
+      "Treat uncertain regular WCT cautiously as possible VT and obtain expert consultation.",
+      "Procainamide (Class IA) or amiodarone (predominantly Class III) are examples used in appropriate pathways. Selection depends on contraindications and patient factors.",
+      "Stable monomorphic VT can sometimes be managed pharmacologically, but the safest choice depends on the patient.",
+      warning,
+      "2025 AHA Adult Tachyarrhythmia With a Pulse / ALS",
+      ""
+    );
+    return;
+  }
+
+  if(rhythm==="vf"){
+    showResult(
+      "VERIFY RHYTHM",
+      "Not class-first",
+      "VF with a pulse is physiologically inconsistent",
+      "Immediately reassess the ECG rhythm and pulse.",
+      "No medication recommendation until rhythm/pulse classification is corrected.",
+      "True ventricular fibrillation does not generate an effective pulse.",
+      "Do not continue a stable-patient pathway.",
+      "2025 AHA Adult Cardiac Arrest",
+      "Correct rhythm/pulse classification"
+    );
+    return;
+  }
+
+}
+
+function newCase(){
+
+  var fields=[
+    "pulse","rhythm","status","qrs","regular","qt",
+    "wpw","ef","struct","electrolytes","organ","meds"
+  ];
+
+  fields.forEach(function(id){
+    document.getElementById(id).selectedIndex=0;
+  });
+
+  document.getElementById("result").classList.remove("show");
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+</script>
+
+</body>
+</html>
